@@ -1,22 +1,28 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+void file_length(FILE *fp, long *fl) {
+    // moves file access position to EOF
+    fseek(fp, 0L, SEEK_END);
+
+    // ftell gives current access position
+    *fl = ftell(fp);
+
+    // could potentially use fseek?
+    // fseek(fp, 0L, SEEK_SET);
+    rewind(fp);
+}
+
 int main() {
-    unsigned char *file_contents;
+    unsigned char *file_contents = NULL;
     FILE *fp = fopen("./dice.png", "rb");
-    long file_size = 0;
+    long fl = 0;
     if(fp != NULL) {
-        //moves file access position to EOF
-        fseek(fp, 0L, SEEK_END);
+        file_length(fp,&fl);
+        printf("File Size: %ld bytes\n", fl);
 
-        //ftell gives current access position
-        file_size = ftell(fp);
-
-        //could also use fseek(fp, 0L, SEEK_SET)
-        rewind(fp);
-
-        file_contents = malloc(file_size);
-        fread(file_contents,file_size,1,fp);
+        file_contents = malloc(fl);
+        fread(file_contents,fl,1,fp);
         printf("File Contents: ");
         for(int i = 12; i < 16; i++) {
             // // decimal representation
@@ -31,8 +37,8 @@ int main() {
             
         printf("\n");
     }
+    free(file_contents);
     fclose(fp);
 
-    printf("File Size: %ld bytes\n", file_size);
     return 0;
 }
