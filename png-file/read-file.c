@@ -64,6 +64,10 @@ int main(int argc, char **argv) {
         print_file_header_contents(fp);
         fclose(fp);
     }
-    
+    else {
+        printf("error: invalid # of arguments passed to png-rf");
+        exit(1);
+    }
+
     return 0;
 }
