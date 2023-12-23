@@ -1,7 +1,10 @@
 CC := clang
 CFlags := -Wall -Wextra
 
-all: read-file
+all: png-read-file
 
-read-file: read-file.c
-	$(CC) $(CFlags) read-file.c -o rf
+png-read-file: png-file/read-file.c
+	$(CC) $(CFlags) png-file/read-file.c -o png-rf
+
+clear: png-rf
+	rm png-rf
