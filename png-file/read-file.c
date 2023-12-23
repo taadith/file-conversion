@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 void file_length(FILE *fp, long *fl) {
     // moves file access position to EOF
@@ -43,11 +42,11 @@ void print_file_header_contents(FILE *fp) {
 
         printf("Width: %d\n", width);
         printf("Height: %d\n", height);
-        printf("Bit Depth: %d\n", bit_depth);
-        printf("Color Type: %d\n", color_type);
-        printf("Compression Method: %d\n", compression_method);
-        printf("Filter Method: %d\n", filter_method);
-        printf("Interlace Method: %d\n", interlace_method);
+        printf("Bit Depth: %d, number of bits per palette index\n", bit_depth);
+        printf("Color Type: %d, value describes interpretation of image data\n", color_type);
+        printf("Compression Method: %d, value indicates the method used to compress image data\n", compression_method);
+        printf("Filter Method: %d, value indicates preprocessing method applied to image data before compression\n", filter_method);
+        printf("Interlace Method: %d, value determines the transmission order of the image data\n", interlace_method);
 
         free(file_contents);
     }

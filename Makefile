@@ -8,3 +8,4 @@ png-read-file: png-file/read-file.c
 
 clear: png-rf
 	rm png-rf
+	clear
