@@ -14,7 +14,7 @@ void file_length(FILE *fp, long *fl) {
     rewind(fp);
 }
 
-void print_png_chunk_information(unsigned char *chunk_start) {
+unsigned char* print_png_chunk_information(unsigned char *chunk_start) {
     int chunk_data_length = 0, chunk_length = 12;
     char chunk_type[5]; chunk_type[4] = '\0';
     
@@ -22,14 +22,34 @@ void print_png_chunk_information(unsigned char *chunk_start) {
         chunk_data_length += chunk_start[i] << (8 * (3 - i));
     chunk_length += chunk_data_length;
     
-    char ancillary, private, reserved, safe_to_copy;
+    
     strncpy(chunk_type, (const char *)(chunk_start + 4), 4);
-    
-    
+    char ancillary = (chunk_type[0] >> 4) & 1;
+    char private = (chunk_type[1] >> 4) & 1;
+    char reserved = (chunk_type[2] >> 4) & 1;
+    // char safe_to_copy = (chunk_type[3] >> 4) & 1;
+
     printf("Chunk Type: %s\n", chunk_type);
+    if(ancillary)
+        printf("    - Ancillary, not necessary for displaying image\n");
+    else
+        printf("    - Critical, necessary to displaying image\n");
+    if(private)
+        printf("    - Private, application-specific chunk\n");
+    else
+        printf("    - Public, part of PNG specs\n");
+    if(reserved)
+        printf("    - Unreserved, unknown chunk type\n");
     printf("Total Length of Chunk: %d\n", chunk_length);
     printf("Length of Data: %d\n", chunk_data_length);
+
+    if(strcmp(chunk_type, "IEND"))
+        return chunk_start + chunk_length;
+
+    else
+        return NULL;
 }
+
 
 void print_png_file_information(FILE *fp, char *filename) {
     if (fp == NULL) {
@@ -67,8 +87,15 @@ void print_png_file_information(FILE *fp, char *filename) {
         printf("Filter Method: %d, value indicates preprocessing method applied to image data before compression\n", filter_method);
         printf("Interlace Method: %d, value determines the transmission order of the image data\n", interlace_method);
 
-        print_png_chunk_information(file_contents + 33);
-        print_png_chunk_information(file_contents + 33 + 226888);
+        printf("File's Chunk Contents:\n");
+        int chunk_no = 1;
+        unsigned char* chunk_ptr = file_contents + 8;
+        while(chunk_ptr != NULL) {
+            printf("(%d)\n", chunk_no);
+            chunk_ptr = print_png_chunk_information(chunk_ptr);
+            chunk_no++;
+        }
+        printf("Total Number of Chunks: %d\n", chunk_no);
 
         free(file_contents);
     }
