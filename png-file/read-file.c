@@ -2,6 +2,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+struct png_file {
+    FILE *fp;
+    long *fl;
+    unsigned char *file_contents;
+};
+
+typedef struct png_file png_file;
+
 void file_length(FILE *fp, long *fl) {
     // moves file access position to EOF
     fseek(fp, 0L, SEEK_END);
@@ -50,13 +58,15 @@ unsigned char* print_png_chunk_information(unsigned char *chunk_start) {
         return NULL;
 }
 
+void print_png_file_chunk_information(unsigned char *file_contents)
 
 void print_png_file_information(FILE *fp, char *filename) {
     if (fp == NULL) {
-        perror("error: file pointer is null\n");
-        return;
+        printf("error: file pointer is null\n");
+        exit(1);
     }
     else {
+
         printf("File Name: %s\n", filename);
         long fl = 0;
         file_length(fp,&fl);
