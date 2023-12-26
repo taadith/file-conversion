@@ -14,7 +14,7 @@ I found myself bored during the winter break of my senior year and had been want
     - as i update other functions, i have to keep changing void png_file::print_file_information(png_file*)
     - research JPEG files
 2. In progress
-    - learn about color types & color depths
+    - (most important for rn) learn about color types & color depths
 3. Complete
     - create png_file struct
 
