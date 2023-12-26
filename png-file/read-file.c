@@ -1,24 +1,7 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "read-file.h"
-
-// helper functions:
-void compute_file_size(FILE *fp, long *fl) {
-    // moves file access position to EOF
-    fseek(fp, 0L, SEEK_END);
-
-    // ftell gives current access position
-    *fl = ftell(fp);
-
-    // could potentially use fseek?
-    // fseek(fp, 0L, SEEK_SET);
-    rewind(fp);
-}
 
 // struct constructor:
 png_file* create_png_file(char* fn) {
-    png_file new_file = {NULL, NULL, NULL};
     if (fn == NULL) {
         printf("error: NULL value provided as file name in char* variable\n");
         return NULL;
@@ -30,11 +13,20 @@ png_file* create_png_file(char* fn) {
         return NULL;
     }
     png_file new_file = {fp, fn, NULL, NULL};
-    compute_file_size(fp, new_file.file_size);
+    
+    // grabbing file_size
+    fseek(fp, 0L, SEEK_END);        // moves file access position to EOF
+    new_file.file_size = ftell(fp); // ftell gives current access position
+    rewind(fp);                     // could use fseek(fp, 0L, SEEK_SET);
 
+    //grabbing file_contents
     unsigned char *file_contents = malloc(new_file.file_size);
-    fread(file_contents, new_file.file_size, 1, fp);
-
+    size_t bytes_read = fread(file_contents, new_file.file_size, 1, fp);
+    if(bytes_read != new_file.file_size) {
+        printf("error: invalid read of png file\n");
+        return NULL;
+    }
+    
     return &new_file;
 }
 
@@ -125,14 +117,9 @@ void print_png_file_information(FILE *fp, char *filename) {
     }
 }
 
-
-
-
 int main(int argc, char **argv) {
     if (argc == 2) {
-        FILE *fp = fopen(argv[1], "rb");
-        print_png_file_information(fp, argv[1]);
-        fclose(fp);
+        printf("WORK IN PROGRESS: the .png file is %s\n", argv[1]);
     }
     else {
         perror("error: invalid # of arguments passed to png-rf");
