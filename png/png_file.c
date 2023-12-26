@@ -25,8 +25,8 @@ png_file* create_png_file(char* fn) {
     
     // grabbing file_size
     fseek(fp, 0L, SEEK_END);        // moves file access position to EOF
-    long fs = ftell(fp);
-    new_file -> file_size = &fs; // ftell gives current access position
+    long fs = ftell(fp);            // ftell gives current access position
+    new_file -> file_size = &fs; 
     rewind(fp);                     // could use fseek(fp, 0L, SEEK_SET);
 
     //grabbing file_contents
@@ -122,13 +122,23 @@ unsigned char* print_png_chunk_information(unsigned char *chunk_start) {
 }
 
 void print_png_file_information(png_file *pf) {
+    // checking if ptr is null
     if (pf == NULL) {
         printf("error: png_file ptr is null\n");
+        exit(1);
+    }
+    
+    // checking file signature
+    unsigned char png_signature[] = {0x89, 'P', 'N', 'G', '\r', '\n', 0x1a, '\n'};
+    if (memcmp(pf -> file_contents, png_signature, 8) != 0) {
+        printf("error: png_file signature is incorrect\n");
         exit(1);
     }
     else {
         printf("File Name: %s\n", pf -> file_name);
         printf("File Size: %ld bytes\n", *(pf -> file_size));
+
+        
 
         unsigned int width = 0, height = 0;
         for(int i = 16; i < 20; i++)
@@ -166,18 +176,17 @@ void print_png_file_information(png_file *pf) {
 
 int main(int argc, char **argv) {
     if (argc == 2) {
-        printf("..........Processing file..........\n");
         png_file* pf = create_png_file(argv[1]);
-        printf(".....png_file has been created.....\n");
         if(pf == NULL) {
             exit(1);
         }
-        printf(".........Freeing png_file..........\n");
+        
+        print_png_file_information(pf);
+
         free_png_files();
-        printf("....png_file successfylly freed....\n");
     }
     else {
-        perror("error: invalid # of arguments passed to png-rf");
+        perror("error: invalid # of arguments passed to png-rf\n");
         return (1);
     }
 
