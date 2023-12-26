@@ -1,16 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "read-file.h"
 
-struct png_file {
-    FILE *fp;
-    long *fl;
-    unsigned char *file_contents;
-};
-
-typedef struct png_file png_file;
-
-void file_length(FILE *fp, long *fl) {
+// helper functions:
+void compute_file_size(FILE *fp, long *fl) {
     // moves file access position to EOF
     fseek(fp, 0L, SEEK_END);
 
@@ -20,6 +14,28 @@ void file_length(FILE *fp, long *fl) {
     // could potentially use fseek?
     // fseek(fp, 0L, SEEK_SET);
     rewind(fp);
+}
+
+// struct constructor:
+png_file* create_png_file(char* fn) {
+    png_file new_file = {NULL, NULL, NULL};
+    if (fn == NULL) {
+        printf("error: NULL value provided as file name in char* variable\n");
+        return NULL;
+    }
+    
+    FILE *fp = fopen(fn, "rb");
+    if(fp == NULL) {
+        printf("error: file pointer is null\n");
+        return NULL;
+    }
+    png_file new_file = {fp, fn, NULL, NULL};
+    compute_file_size(fp, new_file.file_size);
+
+    unsigned char *file_contents = malloc(new_file.file_size);
+    fread(file_contents, new_file.file_size, 1, fp);
+
+    return &new_file;
 }
 
 unsigned char* print_png_chunk_information(unsigned char *chunk_start) {
@@ -58,8 +74,6 @@ unsigned char* print_png_chunk_information(unsigned char *chunk_start) {
         return NULL;
 }
 
-void print_png_file_chunk_information(unsigned char *file_contents)
-
 void print_png_file_information(FILE *fp, char *filename) {
     if (fp == NULL) {
         printf("error: file pointer is null\n");
@@ -69,7 +83,7 @@ void print_png_file_information(FILE *fp, char *filename) {
 
         printf("File Name: %s\n", filename);
         long fl = 0;
-        file_length(fp,&fl);
+        compute_file_size(fp,&fl);
         printf("File Size: %ld bytes\n", fl);
 
         unsigned char *file_contents = malloc(fl);
@@ -110,6 +124,7 @@ void print_png_file_information(FILE *fp, char *filename) {
         free(file_contents);
     }
 }
+
 
 
 
