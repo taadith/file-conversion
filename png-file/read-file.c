@@ -26,8 +26,55 @@ png_file* create_png_file(char* fn) {
         printf("error: invalid read of png file\n");
         return NULL;
     }
-    
+
+    add_png_file(&new_file);
+
     return &new_file;
+}
+
+//adding png_file to pfs
+void add_png_file(png_file *pf) {
+    if (pfs_size + 1 > pfs_capacity) {
+        //++pfs_size;
+        //pfs_capacity *= 2;
+        png_file **new_pfs = (png_file**) malloc(2 * pfs_capacity * sizeof(png_file*));
+        for(int i = 0; i < pfs_size; i++)
+            new_pfs[i] = pfs[i];
+        free(pfs);
+        pfs = new_pfs;
+        pfs_capacity *= 2;
+    }
+    ++pfs_size;
+    pfs[pfs_size - 1] = pf;
+}
+
+// png_file "destructor"
+void free_png_file(png_file *pf) {
+    // closing the file!
+    if (fclose(pf -> file_ptr) != 0) {
+        printf("error: png file not closed properly");
+        exit(1);
+    }
+    pf -> file_ptr = NULL;
+
+    // freeing file_size ptr
+    free(pf -> file_size);
+    pf -> file_size = NULL;
+
+    // freeing file_contents ptr
+    free(pf -> file_contents);
+    pf -> file_contents = NULL;
+}
+
+// pfs "destructor"
+void free_png_files() {
+    for(int i = 0; i < pfs_size; i++) {
+        png_file *pf = pfs[i];
+        free_png_file(pf);
+        pf = NULL;
+    }
+    free(pfs);
+    pfs = NULL;
 }
 
 unsigned char* print_png_chunk_information(unsigned char *chunk_start) {
@@ -66,34 +113,28 @@ unsigned char* print_png_chunk_information(unsigned char *chunk_start) {
         return NULL;
 }
 
-void print_png_file_information(FILE *fp, char *filename) {
-    if (fp == NULL) {
-        printf("error: file pointer is null\n");
+void print_png_file_information(png_file *pf) {
+    if (pf == NULL) {
+        printf("error: png_file ptr is null\n");
         exit(1);
     }
     else {
-
-        printf("File Name: %s\n", filename);
-        long fl = 0;
-        compute_file_size(fp,&fl);
-        printf("File Size: %ld bytes\n", fl);
-
-        unsigned char *file_contents = malloc(fl);
-        fread(file_contents, fl, 1, fp);
+        printf("File Name: %s\n", pf -> file_name);
+        printf("File Size: %ld bytes\n", *(pf -> file_size));
 
         unsigned int width = 0, height = 0;
         for(int i = 16; i < 20; i++)
-            width += file_contents[i] << (8 * (19 - i));
+            width += (pf -> file_contents[i]) << (8 * (19 - i));
         for(int i = 20; i < 24; i++)
-            height += file_contents[i] << (8 * (19 - i));
+            height += (pf -> file_contents[i]) << (8 * (19 - i));
 
         int bit_depth = 0, color_type = 0;
         int compression_method = 0, filter_method = 0, interlace_method = 0;
-        bit_depth = file_contents[24];
-        color_type = file_contents[25];
-        compression_method = file_contents[26];
-        filter_method = file_contents[27];
-        interlace_method = file_contents[28];
+        bit_depth = pf -> file_contents[24];
+        color_type = pf -> file_contents[25];
+        compression_method = pf -> file_contents[26];
+        filter_method = pf -> file_contents[27];
+        interlace_method = pf -> file_contents[28];
 
         printf("Width: %d\n", width);
         printf("Height: %d\n", height);
@@ -105,15 +146,13 @@ void print_png_file_information(FILE *fp, char *filename) {
 
         printf("File's Chunk Contents:\n");
         int chunk_no = 1;
-        unsigned char* chunk_ptr = file_contents + 8;
+        unsigned char* chunk_ptr = (pf -> file_contents) + 8;
         while(chunk_ptr != NULL) {
             printf("(%d)\n", chunk_no);
             chunk_ptr = print_png_chunk_information(chunk_ptr);
             chunk_no++;
         }
         printf("Total Number of Chunks: %d\n", chunk_no);
-
-        free(file_contents);
     }
 }
 
