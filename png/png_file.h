@@ -1,9 +1,13 @@
 #ifndef PNG_FILE_H
 #define PNG_FILE_H
 
+#define EPNGSIGN    107         /* Incorrect PNG Signature */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+unsigned char PNG_SIGNATURE[] = {0x89, 'P', 'N', 'G', '\r', '\n', 0x1a, '\n'};
 
 // struct def:
 struct png_file {
@@ -22,7 +26,10 @@ unsigned int pfs_capacity = 0;
 // constructor:
 png_file* create_png_file(char*);
 
-//adding png_file to pfs
+// file checker
+int check_png_file(png_file*);
+
+// adding png_file to pfs
 void add_png_file(png_file*);
 
 // png_file "destructor":

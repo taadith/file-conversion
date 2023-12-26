@@ -1,41 +1,13 @@
 #include "png_file.h"
+#include <sys/errno.h>
 
-// struct constructor:
-png_file* create_png_file(char* fn) {
-    if (fn == NULL) {
-        printf("error: NULL value provided as file name in char* variable\n");
-        return NULL;
+int check_png_file(png_file *pf) {
+    // checking file signature
+    if (memcmp(pf -> file_contents, PNG_SIGNATURE, 8) != 0) {
+        errno = EPNGSIGN;
+        return 1;
     }
-    
-    FILE *fp = fopen(fn, "rb");
-    if(fp == NULL) {
-        printf("error: file pointer is null\n");
-        return NULL;
-    }
-    
-    png_file *new_file = (png_file*) malloc(sizeof(png_file));
-    if(new_file == NULL) {
-        printf("error: png_file pointer is null");
-        return NULL;
-    }
-
-    // grabbing file_name and file_ptr
-    new_file -> file_name = fn;
-    new_file -> file_ptr = fp;
-    
-    // grabbing file_size
-    fseek(fp, 0L, SEEK_END);        // moves file access position to EOF
-    long fs = ftell(fp);            // ftell gives current access position
-    new_file -> file_size = &fs; 
-    rewind(fp);                     // could use fseek(fp, 0L, SEEK_SET);
-
-    //grabbing file_contents
-    new_file -> file_contents = malloc(*(new_file -> file_size));
-    fread(new_file -> file_contents, *(new_file -> file_size), 1, fp);
-
-    add_png_file(new_file);
-
-    return new_file;
+    return 0;
 }
 
 //adding png_file to pfs
@@ -56,6 +28,51 @@ void add_png_file(png_file *pf) {
     }
     ++pfs_size;
     pfs[pfs_size - 1] = pf;
+}
+
+// struct constructor:
+png_file* create_png_file(char* fn) {
+    if (fn == NULL) {
+        printf("error: NULL value provided as file name in char* variable\n");
+        return NULL;
+    }
+    
+    FILE *fp = fopen(fn, "rb");
+    if(fp == NULL) {
+        printf("error: file pointer is null\n");
+        return NULL;
+    }
+    
+    png_file *new_file = (png_file*) malloc(sizeof(png_file));
+    if(new_file == NULL) {
+        printf("error: png_file pointer is null");
+        fclose(fp);
+        return NULL;
+    }
+
+    // grabbing file_name and file_ptr
+    new_file -> file_name = fn;
+    new_file -> file_ptr = fp;
+    
+    // grabbing file_size
+    fseek(fp, 0L, SEEK_END);        // moves file access position to EOF
+    long fs = ftell(fp);            // ftell gives current access position
+    new_file -> file_size = &fs; 
+    rewind(fp);                     // could use fseek(fp, 0L, SEEK_SET);
+
+    //grabbing file_contents
+    new_file -> file_contents = malloc(*(new_file -> file_size));
+    fread(new_file -> file_contents, *(new_file -> file_size), 1, fp);
+
+    if (check_png_file(new_file) == 1 && errno == EPNGSIGN) {
+        printf("error: %s's PNG signature is incorrect\n", fn);
+        fclose(fp);
+        return NULL;
+    }
+
+    add_png_file(new_file);
+
+    return new_file;
 }
 
 // png_file "destructor"
@@ -125,13 +142,6 @@ void print_png_file_information(png_file *pf) {
     // checking if ptr is null
     if (pf == NULL) {
         printf("error: png_file ptr is null\n");
-        exit(1);
-    }
-    
-    // checking file signature
-    unsigned char png_signature[] = {0x89, 'P', 'N', 'G', '\r', '\n', 0x1a, '\n'};
-    if (memcmp(pf -> file_contents, png_signature, 8) != 0) {
-        printf("error: png_file signature is incorrect\n");
         exit(1);
     }
     else {
