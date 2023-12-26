@@ -1,4 +1,4 @@
-#include "read-file.h"
+#include "png-file.h"
 
 // struct constructor:
 png_file* create_png_file(char* fn) {
@@ -12,33 +12,43 @@ png_file* create_png_file(char* fn) {
         printf("error: file pointer is null\n");
         return NULL;
     }
-    png_file new_file = {fp, fn, NULL, NULL};
     
-    // grabbing file_size
-    fseek(fp, 0L, SEEK_END);        // moves file access position to EOF
-    new_file.file_size = ftell(fp); // ftell gives current access position
-    rewind(fp);                     // could use fseek(fp, 0L, SEEK_SET);
-
-    //grabbing file_contents
-    unsigned char *file_contents = malloc(new_file.file_size);
-    size_t bytes_read = fread(file_contents, new_file.file_size, 1, fp);
-    if(bytes_read != new_file.file_size) {
-        printf("error: invalid read of png file\n");
+    png_file *new_file = (png_file*) malloc(sizeof(png_file));
+    if(new_file == NULL) {
+        printf("error: png_file pointer is null");
         return NULL;
     }
 
-    add_png_file(&new_file);
+    // grabbing file_name and file_ptr
+    new_file -> file_name = fn;
+    new_file -> file_ptr = fp;
+    
+    // grabbing file_size
+    fseek(fp, 0L, SEEK_END);        // moves file access position to EOF
+    long fs = ftell(fp);
+    new_file -> file_size = &fs; // ftell gives current access position
+    rewind(fp);                     // could use fseek(fp, 0L, SEEK_SET);
 
-    return &new_file;
+    //grabbing file_contents
+    new_file -> file_contents = malloc(*(new_file -> file_size));
+    fread(new_file -> file_contents, *(new_file -> file_size), 1, fp);
+
+    add_png_file(new_file);
+
+    return new_file;
 }
 
 //adding png_file to pfs
 void add_png_file(png_file *pf) {
-    if (pfs_size + 1 > pfs_capacity) {
+    if (pfs_capacity == 0) {
+        pfs = (png_file**) malloc(sizeof(png_file*));
+        pfs_capacity = 1;
+    }
+    else if (pfs_size + 1 > pfs_capacity) {
         //++pfs_size;
         //pfs_capacity *= 2;
         png_file **new_pfs = (png_file**) malloc(2 * pfs_capacity * sizeof(png_file*));
-        for(int i = 0; i < pfs_size; i++)
+        for(unsigned int i = 0; i < pfs_size; i++)
             new_pfs[i] = pfs[i];
         free(pfs);
         pfs = new_pfs;
@@ -52,29 +62,27 @@ void add_png_file(png_file *pf) {
 void free_png_file(png_file *pf) {
     // closing the file!
     if (fclose(pf -> file_ptr) != 0) {
-        printf("error: png file not closed properly");
+        printf("error: png file not closed properly\n");
         exit(1);
     }
-    pf -> file_ptr = NULL;
-
-    // freeing file_size ptr
-    free(pf -> file_size);
-    pf -> file_size = NULL;
 
     // freeing file_contents ptr
     free(pf -> file_contents);
     pf -> file_contents = NULL;
+    free(pf);
 }
 
 // pfs "destructor"
 void free_png_files() {
-    for(int i = 0; i < pfs_size; i++) {
+    for(unsigned int i = 0; i < pfs_size; i++) {
         png_file *pf = pfs[i];
         free_png_file(pf);
         pf = NULL;
     }
     free(pfs);
     pfs = NULL;
+    pfs_size = 0;
+    pfs_capacity = 0;
 }
 
 unsigned char* print_png_chunk_information(unsigned char *chunk_start) {
@@ -158,7 +166,15 @@ void print_png_file_information(png_file *pf) {
 
 int main(int argc, char **argv) {
     if (argc == 2) {
-        printf("WORK IN PROGRESS: the .png file is %s\n", argv[1]);
+        printf("..........Processing file..........\n");
+        png_file* pf = create_png_file(argv[1]);
+        printf(".....png_file has been created.....\n");
+        if(pf == NULL) {
+            exit(1);
+        }
+        printf(".........Freeing png_file..........\n");
+        free_png_files();
+        printf("....png_file successfylly freed....\n");
     }
     else {
         perror("error: invalid # of arguments passed to png-rf");
