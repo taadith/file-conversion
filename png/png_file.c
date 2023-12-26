@@ -1,7 +1,8 @@
 #include "png_file.h"
-#include <sys/errno.h>
 
 int check_png_file(png_file *pf) {
+    // checking filename
+
     // checking file signature
     if (memcmp(pf -> file_contents, PNG_SIGNATURE, 8) != 0) {
         errno = EPNGSIGN;
@@ -167,7 +168,18 @@ void print_png_file_information(png_file *pf) {
         printf("Width: %d\n", width);
         printf("Height: %d\n", height);
         printf("Bit Depth: %d, number of bits per palette index\n", bit_depth);
-        printf("Color Type: %d, value describes interpretation of image data\n", color_type);
+        printf("Color Type: %d, ", color_type);
+        if(color_type == 0)
+            printf("each pixel is a grayscale sample\n");
+        if(color_type == 2)
+            printf("each pixel is an RGB triple\n");
+        if(color_type == 3)
+            printf("each pixel is a palette index (a PLTE chunk must appear)\n");
+        if(color_type == 4)
+            printf("each pixel is a grayscale sample and includes an alpha sample\n");
+        if(color_type == 6)
+            printf("each pixel is an RGB triple and includes an alpha sample\n");
+        
         printf("Compression Method: %d, value indicates the method used to compress image data\n", compression_method);
         printf("Filter Method: %d, value indicates preprocessing method applied to image data before compression\n", filter_method);
         printf("Interlace Method: %d, value determines the transmission order of the image data\n", interlace_method);
