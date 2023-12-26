@@ -1,5 +1,5 @@
-#ifndef INCLUDE_H
-#define INCLUDE_H
+#ifndef PNG_FILE_H
+#define PNG_FILE_H
 
 #include <stdio.h>
 #include <stdlib.h>

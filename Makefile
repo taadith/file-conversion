@@ -1,12 +1,12 @@
 CC := clang
 CFlags := -g -Wall -Wextra
 
-all: png-file debug-png-file
+all-png: png debug-png
 
-png-file: png/png-file.h png/png-file.c
-	$(CC) $(CFlags) png/png-file.c -o png-file
+png: png/png_file.h png/png_file.c
+	$(CC) $(CFlags) png/png_file.c -o png-file
 
-debug-png-file: png dice.png
+debug-png: png-file dice.png
 	leaks --atExit -- ./png-file dice.png
 
 clear: png

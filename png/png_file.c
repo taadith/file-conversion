@@ -1,4 +1,4 @@
-#include "png-file.h"
+#include "png_file.h"
 
 // struct constructor:
 png_file* create_png_file(char* fn) {
