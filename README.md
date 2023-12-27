@@ -19,4 +19,4 @@ I found myself bored during the winter break of my senior year and had been want
     - create png_file struct
 
 ## Sources
-1. PNG Documentation: http://www.libpng.org/pub/png/spec/1.2/PNG-Contents.html
+1. PNG (Third Edition) Documentation: https://www.w3.org/TR/png-3/
