@@ -167,6 +167,8 @@ void print_png_file_information(png_file *pf) {
 
         int bit_depth = 0, color_type = 0;
         int compression_method = 0, filter_method = 0, interlace_method = 0;
+        
+        // NOTE to me: may need to add explicit checkers in the future!!!
         bit_depth = pf -> file_contents[24];
         color_type = pf -> file_contents[25];
         compression_method = pf -> file_contents[26];
@@ -191,7 +193,12 @@ void print_png_file_information(png_file *pf) {
         
         printf("Compression Method: %d, value indicates the method used to compress image data\n", compression_method);
         printf("Filter Method: %d, value indicates preprocessing method applied to image data before compression\n", filter_method);
-        printf("Interlace Method: %d, value determines the transmission order of the image data\n", interlace_method);
+        
+        printf("Interlace Method: %d, ", interlace_method);
+        if(interlace_method == 0)
+            printf("no interlace method is used\n");
+        if(interlace_method == 1)
+            printf("the Adam7 interlace method is used\n");
 
         // printf("File's Chunk Contents:\n");
         // int chunk_no = 1;
