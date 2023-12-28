@@ -4,10 +4,8 @@ int check_png_file(png_file *pf) {
     // checking filename
 
     // checking file signature
-    if (memcmp(pf -> file_contents, PNG_SIGNATURE, 8) != 0) {
-        errno = EPNGSIGN;
+    if (memcmp(pf -> file_contents, PNG_SIGNATURE, 8) != 0)
         return 1;
-    }
     return 0;
 }
 
@@ -65,7 +63,7 @@ png_file* create_png_file(char* fn) {
     new_file -> file_contents = malloc(*(new_file -> file_size));
     fread(new_file -> file_contents, *(new_file -> file_size), 1, fp);
 
-    if (check_png_file(new_file) == 1 && errno == EPNGSIGN) {
+    if (check_png_file(new_file) == 1) {
         printf("error: %s's PNG signature is incorrect\n", fn);
         fclose(fp);
         return NULL;

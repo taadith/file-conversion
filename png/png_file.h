@@ -1,12 +1,9 @@
 #ifndef PNG_FILE_H
 #define PNG_FILE_H
 
-#define EPNGSIGN    107         /* Incorrect PNG Signature */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/errno.h>
 
 //png signature never changes
 unsigned char PNG_SIGNATURE[] = {0x89, 'P', 'N', 'G', '\r', '\n', 0x1a, '\n'};
