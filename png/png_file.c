@@ -102,7 +102,7 @@ void free_png_files() {
 }
 
 unsigned char* print_png_chunk_information(unsigned char *chunk_start) {
-    int chunk_data_length = 0, chunk_length = 12;
+    unsigned int chunk_data_length = 0, chunk_length = 12;
     char chunk_type[5]; chunk_type[4] = '\0';
     
     for(int i = 0; i < 4; i++)
