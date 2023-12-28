@@ -147,8 +147,6 @@ void print_png_file_information(png_file *pf) {
         printf("File Name: %s\n", pf -> file_name);
         printf("File Size: %ld bytes\n", *(pf -> file_size));
 
-        
-
         unsigned int width = 0, height = 0;
         for(int i = 16; i < 20; i++)
             width += (pf -> file_contents[i]) << (8 * (19 - i));
@@ -166,6 +164,7 @@ void print_png_file_information(png_file *pf) {
         printf("Width: %d\n", width);
         printf("Height: %d\n", height);
         printf("Bit Depth: %d, number of bits per palette index\n", bit_depth);
+        
         printf("Color Type: %d, ", color_type);
         if(color_type == 0)
             printf("each pixel is a grayscale sample\n");
@@ -182,15 +181,15 @@ void print_png_file_information(png_file *pf) {
         printf("Filter Method: %d, value indicates preprocessing method applied to image data before compression\n", filter_method);
         printf("Interlace Method: %d, value determines the transmission order of the image data\n", interlace_method);
 
-        printf("File's Chunk Contents:\n");
-        int chunk_no = 1;
-        unsigned char* chunk_ptr = (pf -> file_contents) + 8;
-        while(chunk_ptr != NULL) {
-            printf("(%d)\n", chunk_no);
-            chunk_ptr = print_png_chunk_information(chunk_ptr);
-            chunk_no++;
-        }
-        printf("Total Number of Chunks: %d\n", chunk_no);
+        // printf("File's Chunk Contents:\n");
+        // int chunk_no = 1;
+        // unsigned char* chunk_ptr = (pf -> file_contents) + 8;
+        // while(chunk_ptr != NULL) {
+        //     printf("(%d)\n", chunk_no);
+        //     chunk_ptr = print_png_chunk_information(chunk_ptr);
+        //     chunk_no++;
+        // }
+        // printf("Total Number of Chunks: %d\n", chunk_no);
     }
 }
 
