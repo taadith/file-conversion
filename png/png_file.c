@@ -152,6 +152,18 @@ void print_png_file_information(png_file *pf) {
             width += (pf -> file_contents[i]) << (8 * (19 - i));
         for(int i = 20; i < 24; i++)
             height += (pf -> file_contents[i]) << (8 * (19 - i));
+        if (width == 0 && height == 0) {
+            printf("error: width and height are invalid values of 0\n");
+        }
+        else if(width == 0) {
+            printf("error: width is an invalid value of 0\n");
+            exit(1);
+        }
+        else if(height == 0) {
+            printf("error: height is an invalid value of 0\n");
+            exit(1);
+        }
+        
 
         int bit_depth = 0, color_type = 0;
         int compression_method = 0, filter_method = 0, interlace_method = 0;
