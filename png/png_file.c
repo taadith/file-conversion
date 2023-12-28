@@ -132,7 +132,6 @@ unsigned char* print_png_chunk_information(unsigned char *chunk_start) {
 
     if(strcmp(chunk_type, "IEND"))
         return chunk_start + chunk_length;
-
     else
         return NULL;
 }
@@ -200,15 +199,16 @@ void print_png_file_information(png_file *pf) {
         if(interlace_method == 1)
             printf("the Adam7 interlace method is used\n");
 
-        // printf("File's Chunk Contents:\n");
-        // int chunk_no = 1;
-        // unsigned char* chunk_ptr = (pf -> file_contents) + 8;
-        // while(chunk_ptr != NULL) {
-        //     printf("(%d)\n", chunk_no);
-        //     chunk_ptr = print_png_chunk_information(chunk_ptr);
-        //     chunk_no++;
-        // }
-        // printf("Total Number of Chunks: %d\n", chunk_no);
+        printf("File's Chunk Contents:\n");
+        int chunk_no = 1;
+        unsigned char* chunk_ptr = (pf -> file_contents) + 8;
+        while(chunk_ptr != NULL) {
+            printf("(%d)\n", chunk_no);
+            chunk_ptr = print_png_chunk_information(chunk_ptr);
+            printf("\n");
+            chunk_no++;
+        }
+        printf("Total Number of Chunks: %d\n", chunk_no);
     }
 }
 
