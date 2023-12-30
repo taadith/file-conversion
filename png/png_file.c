@@ -4,8 +4,20 @@ int check_png_file(png_file *pf) {
     // checking filename
 
     // checking file signature
-    if (memcmp(pf -> file_contents, PNG_SIGNATURE, 8) != 0)
+    if (memcmp(pf -> file_contents, PNG_SIGNATURE, 8) != 0) {
+        printf("error: %s's PNG signature is incorrect\n", pf -> file_name);
         return 1;
+    }
+
+    //checking IHDR chunk
+    unsigned int IHDR_chunk_length = 0;
+    for(int i = 8; i < 12; i++)
+        IHDR_chunk_length += (pf -> file_contents[i]) << (8 * (15 - i));
+    if (IHDR_chunk_length != 13) {
+        printf("error: IHDR chunk length is not equal to 13\n");
+        return 1;
+    }
+
     return 0;
 }
 
@@ -63,8 +75,7 @@ png_file* create_png_file(char* fn) {
     new_file -> file_contents = malloc(*(new_file -> file_size));
     fread(new_file -> file_contents, *(new_file -> file_size), 1, fp);
 
-    if (check_png_file(new_file) == 1) {
-        printf("error: %s's PNG signature is incorrect\n", fn);
+    if (check_png_file(new_file) != 0) {
         fclose(fp);
         return NULL;
     }
@@ -150,7 +161,7 @@ void print_png_file_information(png_file *pf) {
         for(int i = 16; i < 20; i++)
             width += (pf -> file_contents[i]) << (8 * (19 - i));
         for(int i = 20; i < 24; i++)
-            height += (pf -> file_contents[i]) << (8 * (19 - i));
+            height += (pf -> file_contents[i]) << (8 * (23 - i));
         if (width == 0 && height == 0) {
             printf("error: width and height are invalid values of 0\n");
         }
