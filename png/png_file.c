@@ -2,7 +2,12 @@
 
 int check_png_file(png_file *pf) {
     // checking filename
-
+    unsigned int fn_length = 0;
+    unsigned char uc = pf -> file_name[0];
+    while (uc != '\0') {
+        fn_length++;
+        uc = pf -> file_name[fn_length];
+    }
     // checking file signature
     if (memcmp(pf -> file_contents, PNG_SIGNATURE, 8) != 0) {
         printf("error: %s's PNG signature is incorrect\n", pf -> file_name);

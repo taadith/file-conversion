@@ -5,10 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-//png signature never changes
-unsigned char PNG_SIGNATURE[] = {0x89, 'P', 'N', 'G', '\r', '\n', 0x1a, '\n'};
 
-// struct def:
 struct png_file {
     FILE *file_ptr;
     char *file_name;
@@ -17,6 +14,9 @@ struct png_file {
 };
 
 typedef struct png_file png_file;
+
+//png signature never changes
+unsigned char PNG_SIGNATURE[] = {0x89, 'P', 'N', 'G', '\r', '\n', 0x1a, '\n'};
 
 // need to implement some image representation for png_file to contain
 // this image rep can then be passed on to the next struct! 
