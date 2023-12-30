@@ -12,10 +12,10 @@ unsigned long crc_table[256];
 int crc_table_computed = 0;
 
 // make the table for a fast CRC
-void make_crc_table(void) {
+void make_crc_table() {
     unsigned long c;
     for(int i = 0; i < 256; i++) {
-        c = (unsigned long) n;
+        c = (unsigned long) i;
         for(int j = 0; j < 8; j++) {
             if (c & 1)
                 c = 0xedb88320L ^ (c >> 1);
@@ -37,8 +37,12 @@ unsigned long update_crc(unsigned long crc, unsigned char *buf, int len) {
     if(!crc_table_computed)
         make_crc_table();
     for(int i = 0; i < len; i++)
-        c = crc_table[(c ^ buf[n]) & 0xff] ^ (c >> 8);
+        c = crc_table[(c ^ buf[i]) & 0xff] ^ (c >> 8);
     return c;
+}
+
+void clear_crc_table() {
+    crc_table_computed = 0;
 }
 
 // return the CRC of the bytes buf[0..len-1]
