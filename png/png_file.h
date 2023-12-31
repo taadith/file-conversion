@@ -51,11 +51,14 @@ unsigned long crc(unsigned char *buf, int len)
   return update_crc(0xffffffffL, buf, len) ^ 0xffffffffL;
 }
 
+//need to add width and height at some pt
 struct png_file {
     FILE *file_ptr;
     char *file_name;
     long *file_size;
     unsigned char *file_contents;
+    // unsigned int width;
+    // unsigned int height;
 };
 
 typedef struct png_file png_file;
