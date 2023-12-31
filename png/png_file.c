@@ -227,22 +227,3 @@ void print_png_file_information(png_file *pf) {
         printf("Total Number of Chunks: %d\n", chunk_no);
     }
 }
-
-int main(int argc, char **argv) {
-    if (argc == 2) {
-        png_file* pf = create_png_file(argv[1]);
-        if(pf == NULL) {
-            exit(1);
-        }
-        
-        print_png_file_information(pf);
-
-        free_png_files();
-    }
-    else {
-        perror("error: invalid # of arguments passed to png-rf\n");
-        return (1);
-    }
-
-    return 0;
-}
