@@ -10,6 +10,7 @@ test-png: png/png_file.h png/test_png_file.c
 	$(CC) $(CFlags) png/test_png_file.c -o test-png-file
 
 leaks-png: test-png-file
+	leaks --atExit -- ./png-file images/dice.png
 	leaks --atExit -- ./test-png-file
 
 clear: png
