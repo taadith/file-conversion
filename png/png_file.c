@@ -227,3 +227,25 @@ void print_png_file_information(png_file *pf) {
         printf("Total Number of Chunks: %d\n", chunk_no);
     }
 }
+
+int main() {
+    png_file* pf = create_png_file("images/dice.png");
+    //IHDR file is 13+12=25 bytes long
+    
+    // from 8-11: length
+    unsigned data_length = 0;
+    printf("Length: ");
+    for(int i = 8; i <= 11; i++)
+        data_length += (pf -> file_contents[i]) << (8 * (11 - i));
+    printf(" %d\n", data_length);
+
+    // from 12-15: chunk type
+    printf("Chunk Type: ");
+    for(int i = 12; i <= 15; i++)
+        printf("%c", pf -> file_contents[i]);
+    printf("\n");
+
+    free_png_files();
+
+    return 0;
+}
