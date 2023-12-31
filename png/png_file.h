@@ -27,6 +27,10 @@ void make_crc_table() {
     crc_table_computed = 1;
 }
 
+void clear_crc_table() {
+    make_crc_table();
+}
+
 /* update a running CRC with the bytes buf[0..len-1]
    the CRC should be initialized to all 1's, 
    and the transmitted value is the 1's complement of the final running CRC 
@@ -39,10 +43,6 @@ unsigned long update_crc(unsigned long crc, unsigned char *buf, int len) {
     for(int i = 0; i < len; i++)
         c = crc_table[(c ^ buf[i]) & 0xff] ^ (c >> 8);
     return c;
-}
-
-void clear_crc_table() {
-    crc_table_computed = 0;
 }
 
 // return the CRC of the bytes buf[0..len-1]
